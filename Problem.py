@@ -265,9 +265,9 @@ def intro():
     os.system("cls")
 
     # Display contributors and project metadata.
-    print("CS170 Project 01 - Eight Puzzle Solver")
-    print("Completed 04/27/2021\n")
-    print("Otniel Thehumury / otheh001 / 862029595")
+    print("\nCS170 Project 01 - Eight Puzzle Solver")
+    # print("Completed 04/27/2021")
+    print("\nOtniel Thehumury / otheh001 / 862029595")
     print("Matthew Walsh / mwals003 / 862088280\n")
     print("---------------------------------------\n")
 
