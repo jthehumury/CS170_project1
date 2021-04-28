@@ -4,11 +4,12 @@ from math import floor
 #--class definitions-------------------------------------------------------------------
 
 class Node:
-    def __init__(self,state,g,mode):
+    def __init__(self,state,g,mode,parent):
         self.state=state
         self.g=g
         self.h=0
         self.mode=mode
+        self.parent=parent
 
     def f(self):
         self.h=0
@@ -26,7 +27,7 @@ class Node:
             if self.mode==2:
                 self.h+=manhattan_distance
             if self.mode==3:
-                self.h+=manhattan_distance
+                self.h+=euclidean_distance
         return self.h+self.g
 
     def display(self):
@@ -54,25 +55,7 @@ class Problem:
         self.max_q=0
         self.explored=[]
 
-    def graph_search(self,mode):
-        node=Node(self.start_state,0,1)
-        node.display()
-        if node.state==self.goal_state:
-            return node
-        self.update_frontier(node,mode)
-        while (True):
-            if not self.frontier:
-                return None
-            current_state=self.remove_state()
-            if current_state.state in self.explored:
-                continue
-            current_state.display()
-            self.explored.append(current_state.state)
-            if current_state.state==self.goal_state:
-                return current_state
-            self.update_frontier(current_state,mode)
-
-    def update_frontier(self,current_state,mode):
+    def update_frontier(self,current_state):
         size_of_game=len(current_state.state)
         g=current_state.g+1
         dimensions=int(sqrt(size_of_game))
@@ -86,25 +69,25 @@ class Problem:
             new_state=list(current_state.state)
             new_state[i],new_state[i+1]=new_state[i+1],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,mode)
+                node=Node(new_state,g,current_state.mode,None)
                 self.frontier.append(node)
         if x_coordinate-1>=0:
             new_state=list(current_state.state)
             new_state[i],new_state[i-1]=new_state[i-1],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,mode)
+                node=Node(new_state,g,current_state.mode,None)
                 self.frontier.append(node)
         if y_coordinate+1<=2:
             new_state=list(current_state.state)
             new_state[i],new_state[i+dimensions]=new_state[i+dimensions],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,mode)
+                node=Node(new_state,g,current_state.mode,None)
                 self.frontier.append(node)
         if y_coordinate-1>=0:
             new_state=list(current_state.state)
             new_state[i],new_state[i-dimensions]=new_state[i-dimensions],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,mode)
+                node=Node(new_state,g,current_state.mode,None)
                 self.frontier.append(node)
         if len(self.frontier)>self.max_q:
             self.max_q=len(self.frontier)
@@ -149,8 +132,11 @@ def intro():
     mode=input("Here: ")
     print("")
     return (puzzle,mode)
-
-def display_results(result):
+    
+def display_path(start_state,result):
+    while start_state:
+        start_state.display()
+        start_state=start_state.parent
     print("-------------")
     if result:
         print("This solution took "+str(result.g)+" moves")
@@ -158,8 +144,27 @@ def display_results(result):
     else:
         print("There is no solution")
 
+def graph_search(problem,node):
+    if node.state==problem.goal_state:
+        return node
+    problem.update_frontier(node)
+    print("Searching...\n")
+    while (True):
+        if not problem.frontier:
+            return None
+        current_state=problem.remove_state()
+        if current_state.state in problem.explored:
+            continue
+        problem.explored.append(current_state.state)
+        if current_state.state==problem.goal_state:
+            current_state.parent=None
+            return current_state
+        problem.update_frontier(current_state)
+
 #--main--------------------------------------------------------------------------------
 
 puzzle_mode_tuple=intro()
 problem=Problem(puzzle_mode_tuple[0])
-display_results(problem.graph_search(puzzle_mode_tuple[1]))
+node=Node(problem.start_state,0,puzzle_mode_tuple[1],None)
+result=graph_search(problem,node)
+display_path(node,result)
