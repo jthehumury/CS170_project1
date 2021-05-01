@@ -32,6 +32,10 @@ class Node:
 
         # Compare each tile to the goal state.
         for i in range(size_of_game):
+
+            if self.state[i] == 0:
+                continue
+
             if goal[i] != self.state[i]:
                 count += 1
 
@@ -46,29 +50,30 @@ class Node:
         if self.mode == 1:
             return self.g
 
-        # Get dimensions of puzzle.
-        size_of_game = len(self.state)
-        dimensions = sqrt(size_of_game)
+        # A* - Misplaced Tiles
+        elif self.mode == 2:
+            self.h = self.misplaced_tiles()
 
-        # Iterate through each tile.
-        for i in range(size_of_game):
+        # A* - Euclidean Distance
+        elif self.mode == 3:
 
-            if self.state[i] == 0:
-                continue
+            # Get dimensions of puzzle.
+            size_of_game = len(self.state)
+            dimensions = sqrt(size_of_game)
 
-            # Determine displacement of tile relative to its goal position.
-            horizontal_distance = (i % dimensions) - ((self.state[i] -1 ) % dimensions)
-            vertical_distance = floor(i / dimensions) - floor((self.state[i] - 1) / dimensions)
+            # Iterate through each tile.
+            for i in range(size_of_game):
+
+                if self.state[i] == 0:
+                    continue
+
+                # Determine displacement of tile relative to its goal position.
+                horizontal_distance = (i % dimensions) - ((self.state[i] -1 ) % dimensions)
+                vertical_distance = floor(i / dimensions) - floor((self.state[i] - 1) / dimensions)
             
-            # Calculate euclidean distance based on displacement.
-            euclidean_distance = sqrt(horizontal_distance ** 2 + vertical_distance ** 2)
-
-            # A* - Misplaced Tiles
-            if self.mode == 2:
-                self.h += self.misplaced_tiles()
+                # Calculate euclidean distance based on displacement.
+                euclidean_distance = sqrt(horizontal_distance ** 2 + vertical_distance ** 2)
             
-            # A* - Euclidean Distance
-            if self.mode == 3:
                 self.h += euclidean_distance
 
         # f(n) = h(n) + g(n)
@@ -136,10 +141,11 @@ class Problem:
         self.frontier = []
         self.max_q = 0
         self.explored = []
+        self.nodes_expanded = 0
 
     # Update frontier based on current state.
     def update_frontier(self, current_state):
-
+        self.nodes_expanded += 1
         # Obtain puzzle metadata.
         size_of_game = len(current_state.state)
         g=current_state.g + 1
@@ -240,7 +246,7 @@ def intro():
     print("Select from the following options:\n")
     print(" 1) Use default puzzle (LONG).       1 2 3")
     print(" 2) Enter your own puzzle.           4 5 6")
-    print(" 3) Quick solution puzzle.           7 8 b\n")
+    print(" 3) Quick solution puzzle.           7 8 *\n")
     
     choice = int(input("Enter Choice Here: "))
 
@@ -268,8 +274,8 @@ def intro():
     # Prompt the user to select a choice.
     print("\nPlease choose from the following algorithms:\n")
     print("1) Uniform Cost Search              1 2 3    1 2 3")
-    print("2) A* - Misplace Tile Heurisitc     4 8 b -> 4 5 6")
-    print("3) A* - Euclidean Dist Heuristic    7 6 5    7 8 b\n")
+    print("2) A* - Misplace Tile Heurisitc     4 8 * -> 4 5 6")
+    print("3) A* - Euclidean Dist Heuristic    7 6 5    7 8 *\n")
 
     mode = input("Enter Choice Here: ")
     print("")
@@ -277,10 +283,10 @@ def intro():
     return (puzzle,mode)
     
 def display_path(result):
-    cost=result.g
     if result:
+
         # Reverses order that trace is printed
-        '''left=result
+        left=result
         right=result.parent
         prev=None
         while right:
@@ -289,17 +295,19 @@ def display_path(result):
             left=right
             right=right.parent
         left.parent=prev
+
+        # Prints trace
         while left:
             left.display()
-            left=left.parent'''
-        while result:
-            result.display()
-            result=result.parent
+            left=left.parent
+
         print("-------------")
-        print("This solution took "+str(cost)+" moves")
-        print("The maximum size of the frontier is "+str(problem.max_q))
+        print("To solve this problem the search algorithm expanded a total of "+str(problem.nodes_expanded)+" nodes")
+        print("The maximum number of nodes in the queue at any one time: "+str(problem.max_q))
     else:
         print("There is no solution")
+        print("To solve this problem the search algorithm expanded a total of "+str(problem.nodes_expanded)+" nodes")
+        print("The maximum number of nodes in the queue at any one time: "+str(problem.max_q))
 
 def graph_search(problem,node):
 
