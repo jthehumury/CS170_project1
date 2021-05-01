@@ -69,25 +69,25 @@ class Problem:
             new_state=list(current_state.state)
             new_state[i],new_state[i+1]=new_state[i+1],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,current_state.mode,None)
+                node=Node(new_state,g,current_state.mode,current_state)
                 self.frontier.append(node)
         if x_coordinate-1>=0:
             new_state=list(current_state.state)
             new_state[i],new_state[i-1]=new_state[i-1],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,current_state.mode,None)
+                node=Node(new_state,g,current_state.mode,current_state)
                 self.frontier.append(node)
         if y_coordinate+1<=2:
             new_state=list(current_state.state)
             new_state[i],new_state[i+dimensions]=new_state[i+dimensions],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,current_state.mode,None)
+                node=Node(new_state,g,current_state.mode,current_state)
                 self.frontier.append(node)
         if y_coordinate-1>=0:
             new_state=list(current_state.state)
             new_state[i],new_state[i-dimensions]=new_state[i-dimensions],new_state[i]
             if self.check_frontier(new_state) and new_state not in self.explored:
-                node=Node(new_state,g,current_state.mode,None)
+                node=Node(new_state,g,current_state.mode,current_state)
                 self.frontier.append(node)
         if len(self.frontier)>self.max_q:
             self.max_q=len(self.frontier)
@@ -133,13 +133,27 @@ def intro():
     print("")
     return (puzzle,mode)
     
-def display_path(start_state,result):
-    while start_state:
-        start_state.display()
-        start_state=start_state.parent
-    print("-------------")
+def display_path(result):
+    cost=result.g
     if result:
-        print("This solution took "+str(result.g)+" moves")
+        # Reverses order that trace is printed
+        '''left=result
+        right=result.parent
+        prev=None
+        while right:
+            left.parent=prev
+            prev=left
+            left=right
+            right=right.parent
+        left.parent=prev
+        while left:
+            left.display()
+            left=left.parent'''
+        while result:
+            result.display()
+            result=result.parent
+        print("-------------")
+        print("This solution took "+str(cost)+" moves")
         print("The maximum size of the frontier is "+str(problem.max_q))
     else:
         print("There is no solution")
@@ -157,7 +171,7 @@ def graph_search(problem,node):
             continue
         problem.explored.append(current_state.state)
         if current_state.state==problem.goal_state:
-            current_state.parent=None
+            #current_state.parent=None
             return current_state
         problem.update_frontier(current_state)
 
@@ -167,4 +181,4 @@ puzzle_mode_tuple=intro()
 problem=Problem(puzzle_mode_tuple[0])
 node=Node(problem.start_state,0,puzzle_mode_tuple[1],None)
 result=graph_search(problem,node)
-display_path(node,result)
+display_path(result)
