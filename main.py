@@ -84,7 +84,7 @@ class Node:
         
         # Display heuristics results.
         dimensions=sqrt(len(self.state))
-        print("-------------\n")
+        print("-------------")
         print("f(n) = " + str(self.f()))
         print("g(n) = " + str(self.g))
         print("h(n) = " + str(self.h) + "\n")
@@ -126,9 +126,6 @@ class Node:
             else:
                 col_index += 1
 
-        # Newline.
-        print("")
-
 # ------------------------------------------------------------------------------------------
 # PROBLEM CLASS
 
@@ -148,7 +145,7 @@ class Problem:
 
         # Displays current node
         current_state.display()
-        print("Expanding this node...\n")
+        print("\nExpanding this node...")
 
         # Increments number of nodes expanded
         self.nodes_expanded += 1
@@ -285,14 +282,13 @@ def intro():
     print("3) A* - Euclidean Dist Heuristic    7 6 5    7 8 *\n")
 
     mode = input("Enter Choice Here: ")
-    print("")
 
     return (puzzle,mode)
     
 # EXTRA CREDIT: Solution path
 def display_path(result):
     if result:
-        print("\n-------------\n")
+        print("-------------\n")
         print("Solution path\n")
 
         # Reverses order that trace is printed
@@ -338,7 +334,10 @@ def graph_search(problem,node):
         problem.explored.append(current_state.state)
         if current_state.state==problem.goal_state:
             current_state.display()
-            print("GOAL")
+            print("\nGOAL")
+            print("-------------")
+            print("To solve this problem the search algorithm expanded a total of "+str(problem.nodes_expanded)+" nodes")
+            print("The maximum number of nodes in the queue at any one time: "+str(problem.max_q))
             return current_state
         problem.update_frontier(current_state)
 
@@ -349,4 +348,6 @@ puzzle_mode_tuple=intro()
 problem=Problem(puzzle_mode_tuple[0])
 node=Node(problem.start_state,0,puzzle_mode_tuple[1],None)
 result=graph_search(problem,node)
+
+# EXTRA CREDIT: Solution path
 display_path(result)
