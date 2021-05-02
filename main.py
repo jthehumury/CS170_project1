@@ -350,4 +350,4 @@ node=Node(problem.start_state,0,puzzle_mode_tuple[1],None)
 result=graph_search(problem,node)
 
 # EXTRA CREDIT: Solution path
-display_path(result)
+#display_path(result)
