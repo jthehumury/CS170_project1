@@ -278,7 +278,6 @@ def intro():
     else:
         puzzle=[1,0,3,4,2,6,7,5,8]
 
-
     # Prompt the user to select a choice.
     print("\nPlease choose from the following algorithms:\n")
     print("1) Uniform Cost Search              1 2 3    1 2 3")
@@ -322,10 +321,11 @@ def display_path(result):
 
 def graph_search(problem,node):
 
-    if node.state == problem.goal_state:
-        return node
+    problem.frontier.append(node)
+    problem.max_q = 1
 
-    problem.update_frontier(node)
+    '''if node.state == problem.goal_state:
+        return node'''
 
     while (True):
         if not problem.frontier:
@@ -337,7 +337,7 @@ def graph_search(problem,node):
 
         problem.explored.append(current_state.state)
         if current_state.state==problem.goal_state:
-            print("-------------\n")
+            current_state.display()
             print("GOAL")
             return current_state
         problem.update_frontier(current_state)
