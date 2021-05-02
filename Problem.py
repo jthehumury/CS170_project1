@@ -145,11 +145,19 @@ class Problem:
 
     # Update frontier based on current state.
     def update_frontier(self, current_state):
+
+        # Displays current node
+        current_state.display()
+        print("Expanding this node...\n")
+
+        # Increments number of nodes expanded
         self.nodes_expanded += 1
+
         # Obtain puzzle metadata.
         size_of_game = len(current_state.state)
         g=current_state.g + 1
         dimensions = int(sqrt(size_of_game))
+
         i = None
 
         # Get location of the blank tile.
@@ -244,9 +252,9 @@ def intro():
 
     # Prompt user for choice of puzzle.
     print("Select from the following options:\n")
-    print(" 1) Use default puzzle (LONG).       1 2 3")
-    print(" 2) Enter your own puzzle.           4 5 6")
-    print(" 3) Quick solution puzzle.           7 8 *\n")
+    print(" 1) Use default puzzle               1 2 3")
+    print(" 2) Use Oh Boy puzzle.               4 5 6")
+    print(" 3) Enter your own puzzle.           7 8 *\n")
     
     choice = int(input("Enter Choice Here: "))
 
@@ -256,7 +264,7 @@ def intro():
     dimensions = sqrt(SIZE)
 
     # Allow user to enter their own puzzle.
-    if choice == 2:
+    if choice == 3:
         for i in range(SIZE):
             x_coordinate = int(i % dimensions)
             y_coordinate = int(floor(i / dimensions))
@@ -264,11 +272,11 @@ def intro():
             puzzle.append(cell)
     
     # Trillion-step "Oh Boy" puzzle.
-    elif choice == 1:
+    elif choice == 2:
         puzzle=[8,7,1,6,0,2,5,4,3]
     
     else:
-        puzzle=[1,2,3,4,5,6,0,7,8]
+        puzzle=[1,0,3,4,2,6,7,5,8]
 
 
     # Prompt the user to select a choice.
@@ -282,8 +290,11 @@ def intro():
 
     return (puzzle,mode)
     
+# EXTRA CREDIT: Solution path
 def display_path(result):
     if result:
+        print("\n-------------\n")
+        print("Solution path\n")
 
         # Reverses order that trace is printed
         left=result
@@ -315,7 +326,6 @@ def graph_search(problem,node):
         return node
 
     problem.update_frontier(node)
-    print("Searching...\n")
 
     while (True):
         if not problem.frontier:
@@ -327,6 +337,8 @@ def graph_search(problem,node):
 
         problem.explored.append(current_state.state)
         if current_state.state==problem.goal_state:
+            print("-------------\n")
+            print("GOAL")
             return current_state
         problem.update_frontier(current_state)
 
